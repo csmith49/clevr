@@ -11,16 +11,25 @@ Shape = Enum("Shape", "cube sphere cylinder")
 # OBJECT WRAPPER
 class CLEVRObject:
     def __init__(self, jsonRep):
-        # pull out attributes from jsonRep
+        # pull out spatial attributes from jsonRep
         self.real_coordinates = tuple(jsonRep["3d_coords"])
         self.pixel_coordinates = tuple(jsonRep["pixel_coords"])
         self.rotation = jsonRep["rotation"]
-        # convert attributes to enums when available
-        self.size = Size[jsonRep["size"]]
-        self.color = Color[jsonRep["color"]]
-        self.material = Material[jsonRep["material"]]
-        self.shape = Shape[jsonRep["shape"]]
 
+        # otherwise, stick all the attributes in a dict
+        self.attributes = {
+            "size" : Size[jsonRep["size"]],
+            "color" : Color[jsonRep["color"]],
+            "material" : Material[jsonRep["material"]],
+            "shape" : Shape[jsonRep["shape"]]
+        }
+
+    def __str__(self):
+        size = self.attributes["size"].name
+        color = self.attributes["color"].name
+        material = self.attributes["material"].name
+        shape = self.attributes["shape"].name
+        return f"{size} {color} {material} {shape}"
 
 # ENUMERATIONS FOR SCENE ATTRIBUTES
 Split = Enum("Split", "train test val")
