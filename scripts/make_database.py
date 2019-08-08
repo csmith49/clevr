@@ -1,6 +1,7 @@
 import clevr
 import sqlite3
 from time import time
+from numpy import uint32
 
 from argparse import ArgumentParser
 
@@ -57,16 +58,20 @@ for relation in relations:
 # save the structure
 conn.commit()
 
+# get id for an object
+def getID(obj):
+    return uint32(hash(obj))
+
 # function for importing scenes
 def importScene(scene):
     for obj in scene.objects:
-        key = hash(obj)
+        key = getID(obj)
         cursor.execute(f'''INSERT into objects values ({scene.index}, {key})''')
         for attribute in attributes:
             cursor.execute(f'''INSERT into {attribute} values ({key}, '{getattr(obj, attribute).name}')''')
     for relation in relations:
         for (src, dest) in scene.relations[relation]:
-            cursor.execute(f'''INSERT into {relation} values ({hash(src)}, {hash(dest)})''')
+            cursor.execute(f'''INSERT into {relation} values ({getID(src)}, {getID(dest)})''')
     conn.commit()
 
 # now start loading up scenes
